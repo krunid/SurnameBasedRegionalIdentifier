@@ -1,0 +1,323 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>โปรแกรมตรวจสอบภูมิภาคจากนามสกุล</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            font-family: 'Sarabun', sans-serif;
+        }
+        body {
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            min-height: 100vh;
+            margin: 0;
+            padding: 0;
+        }
+        .main-content {
+            display: flex;
+            justify-content: center;
+            padding: 20px;
+            flex-grow: 1;
+        }
+        .container {
+            background: linear-gradient(to bottom right, #ffffff, #f8f9fa);
+            border-radius: 10px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1), 
+                        0 1px 8px rgba(0, 0, 0, 0.05),
+                        inset 0 0 0 1px rgba(255, 255, 255, 0.9);
+            width: 100%;
+            max-width: 500px;
+            padding: 30px;
+            border: 1px solid rgba(255, 255, 255, 0.8);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .container::before {
+            content: "";
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: linear-gradient(45deg, 
+                                rgba(255,255,255,0.1) 0%, 
+                                rgba(255,255,255,0.1) 20%, 
+                                rgba(255,255,255,0.3) 20%, 
+                                rgba(255,255,255,0.3) 40%, 
+                                rgba(255,255,255,0.1) 40%, 
+                                rgba(255,255,255,0.1) 60%, 
+                                rgba(255,255,255,0.3) 60%, 
+                                rgba(255,255,255,0.3) 80%, 
+                                rgba(255,255,255,0.1) 80%, 
+                                rgba(255,255,255,0.1) 100%);
+            opacity: 0.2;
+            z-index: 0;
+            pointer-events: none;
+        }
+        h1 {
+            color: #2c3e50;
+            text-align: center;
+            margin-top: 0;
+            margin-bottom: 30px;
+            font-size: 24px;
+            position: relative;
+            z-index: 1;
+            background: linear-gradient(90deg, #4facfe, #00f2fe);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        .input-group {
+            margin-bottom: 20px;
+            position: relative;
+        }
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: bold;
+            color: #2c3e50;
+            background: linear-gradient(90deg, #2c3e50, #4a69bd);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        input {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #e0e0e0;
+            border-radius: 6px;
+            font-size: 16px;
+            transition: all 0.3s ease;
+            background: linear-gradient(to bottom, #ffffff, #f9f9f9);
+            box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.05);
+        }
+        input:focus {
+            border-color: #4facfe;
+            box-shadow: 0 0 0 3px rgba(79, 172, 254, 0.15), inset 0 1px 3px rgba(0, 0, 0, 0.05);
+            outline: none;
+        }
+        button {
+            background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+            color: white;
+            border: none;
+            border-radius: 6px;
+            padding: 12px 20px;
+            width: 100%;
+            font-size: 16px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+            box-shadow: 0 4px 15px rgba(79, 172, 254, 0.3);
+        }
+        button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 7px 15px rgba(79, 172, 254, 0.4);
+        }
+        button:active {
+            transform: translateY(1px);
+            box-shadow: 0 3px 10px rgba(79, 172, 254, 0.3);
+        }
+        .overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+        }
+        .popup {
+            background: linear-gradient(to bottom, #ffffff, #f5f5f5);
+            border-radius: 10px;
+            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.2), 
+                        0 10px 10px rgba(0, 0, 0, 0.1);
+            width: 90%;
+            max-width: 500px;
+            padding: 30px;
+            position: relative;
+            max-height: 80vh;
+            overflow-y: auto;
+            border: 1px solid rgba(255, 255, 255, 0.9);
+        }
+        .close-btn {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            background: none;
+            border: none;
+            font-size: 24px;
+            color: #7f8c8d;
+            cursor: pointer;
+            width: auto;
+            padding: 0;
+        }
+        .result h2 {
+            margin-top: 0;
+            color: #2c3e50;
+            font-size: 20px;
+            padding-right: 30px;
+        }
+        .result p {
+            margin-bottom: 10px;
+            color: #34495e;
+            line-height: 1.6;
+        }
+        .map {
+            margin-top: 20px;
+            text-align: center;
+        }
+        .map img {
+            max-width: 100%;
+            border-radius: 6px;
+        }
+        
+        .footer {
+            text-align: center;
+            padding: 15px 0;
+            background: linear-gradient(to bottom, #ffffff, #f0f2f5);
+            border-top: 1px dashed rgba(0, 0, 0, 0.1);
+            color: #7f8c8d;
+            font-size: 14px;
+            width: 100%;
+            box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.05);
+        }
+        
+        .footer-hearts {
+            font-size: 18px;
+            color: #e74c3c;
+            letter-spacing: 3px;
+            margin: 5px 0;
+            animation: pulse 1.5s ease-in-out infinite;
+        }
+        
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+            100% { transform: scale(1); }
+        }
+        
+        .cat {
+            font-size: 20px;
+            margin: 5px 0;
+            display: inline-block;
+            animation: wiggle 3s ease-in-out infinite;
+        }
+        
+        @keyframes wiggle {
+            0%, 100% { transform: rotate(0); }
+            25% { transform: rotate(5deg); }
+            75% { transform: rotate(-5deg); }
+        }
+    </style>
+</head>
+<body>
+    <div class="main-content">
+        <div class="container">
+        <h1>โปรแกรมตรวจสอบภูมิภาคจากนามสกุล</h1>
+        
+        <div class="input-group">
+            <label for="surname">กรุณากรอกนามสกุล</label>
+            <input type="text" id="surname" placeholder="เช่น ศิริวัฒน์, แซ่ลี้, ทองดี">
+        </div>
+        
+        <button onclick="checkSurname()">ตรวจสอบภูมิภาค</button>
+        
+        <div class="overlay" id="result-overlay">
+            <div class="popup">
+                <button class="close-btn" onclick="closePopup()">&times;</button>
+                <div class="result" id="result">
+                    <h2>ผลการตรวจสอบ</h2>
+                    <p id="result-text"></p>
+                    <div class="map" id="map-container"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+    </div>
+    
+    <div class="footer">
+        <div class="footer-hearts">❤ ❤ ❤</div>
+        <div class="cat">ʕ•ᴥ•ʔ</div>
+        <div>สร้างด้วยความน่ารัก</div>
+        <div>© 2025 โปรแกรมตรวจสอบนามสกุลไทย</div>
+    </div>
+
+    <script>
+        function closePopup() {
+            document.getElementById('result-overlay').style.display = 'none';
+            document.getElementById('surname').value = '';
+        }
+        
+        function checkSurname() {
+            const surname = document.getElementById('surname').value.trim().toLowerCase();
+            const resultDiv = document.getElementById('result');
+            const resultText = document.getElementById('result-text');
+            const mapContainer = document.getElementById('map-container');
+            
+            if (!surname) {
+                alert('กรุณากรอกนามสกุล');
+                return;
+            }
+            
+            let region = '';
+            let description = '';
+            let mapHtml = '';
+            
+            // ข้อมูลการตรวจสอบนามสกุล
+            if (surname.startsWith('แซ่') || surname === 'จิว' || surname === 'ลิ้ม' || 
+                surname === 'ตั้ง' || surname === 'อึ้ง' || surname === 'ฮก' || 
+                surname === 'เล้า' || surname === 'โง้ว' || surname === 'เฮง') {
+                region = 'จีน';
+                description = 'นามสกุลนี้มีความเป็นไปได้สูงว่ามีเชื้อสายจีน นามสกุลที่ขึ้นต้นด้วย "แซ่" เช่น แซ่ลี้ แซ่ตั้ง แซ่เฮง แซ่โง้ว มักเป็นนามสกุลของคนไทยเชื้อสายจีนที่ยังคงรักษาการเรียกนามสกุลแบบจีนดั้งเดิม';
+                mapHtml = '<img src="/api/placeholder/400/250" alt="แผนที่ประเทศจีน">';
+            } else if (surname.endsWith('กุล') || surname.includes('เศรษฐ') || surname.includes('บุญ') || 
+                       surname.includes('พงศ์') || surname.includes('พงษ์') || surname.includes('วงศ์')) {
+                region = 'ภาคกลาง';
+                description = 'นามสกุลนี้มีรูปแบบที่พบมากในภาคกลาง โดยเฉพาะนามสกุลที่ลงท้ายด้วย "กุล" หรือมีคำว่า "พงศ์/พงษ์/วงศ์" มักเป็นนามสกุลที่ได้รับพระราชทานหรือมีที่มาจากราชสำนัก';
+                mapHtml = '<img src="/api/placeholder/400/250" alt="แผนที่ภาคกลางของไทย">';
+            } else if (surname.startsWith('ไชย') || surname.includes('ทิพย์') || surname.includes('ชัย') || 
+                      surname.includes('วงศ์') || surname.includes('ณ ')) {
+                region = 'ภาคเหนือ';
+                description = 'นามสกุลนี้มีรูปแบบที่พบมากในภาคเหนือ โดยเฉพาะนามสกุลที่มีคำว่า "ณ" นำหน้าชื่อเมือง เช่น ณ เชียงใหม่ ณ ลำปาง มักเป็นนามสกุลของตระกูลเก่าแก่ในล้านนา หรือนามสกุลที่ขึ้นต้นด้วย "ไชย" และ "ชัย" ก็พบมากในภาคเหนือ';
+                mapHtml = '<img src="/api/placeholder/400/250" alt="แผนที่ภาคเหนือของไทย">';
+            } else if (surname.includes('ทอง') || surname.endsWith('ทอง') || surname.includes('สุวรรณ') || 
+                      surname.includes('ศรี') || surname.includes('บุญ')) {
+                region = 'ภาคอีสาน';
+                description = 'นามสกุลนี้มีรูปแบบที่พบมากในภาคตะวันออกเฉียงเหนือ (อีสาน) โดยเฉพาะนามสกุลที่มีคำว่า "ทอง" "ศรี" และ "บุญ" เป็นส่วนประกอบ ซึ่งสะท้อนความเชื่อเรื่องความเป็นสิริมงคล';
+                mapHtml = '<img src="/api/placeholder/400/250" alt="แผนที่ภาคอีสานของไทย">';
+            } else if (surname.endsWith('สกุล') || surname.includes('นาวา') || surname.includes('ทะเล')) {
+                region = 'ภาคใต้';
+                description = 'นามสกุลนี้มีรูปแบบที่พบมากในภาคใต้ โดยเฉพาะนามสกุลที่เกี่ยวข้องกับทะเล การเดินเรือ หรือลงท้ายด้วย "สกุล" ซึ่งเป็นลักษณะเฉพาะของนามสกุลในภาคใต้';
+                mapHtml = '<img src="/api/placeholder/400/250" alt="แผนที่ภาคใต้ของไทย">';
+            } else if (surname.includes('มุสลิม') || surname.includes('อิสลาม') || 
+                      surname.includes('หะ') || surname.startsWith('อับ') || surname.startsWith('อาลี')) {
+                region = 'ไทยมุสลิม';
+                description = 'นามสกุลนี้มีรูปแบบที่พบมากในกลุ่มคนไทยมุสลิม โดยเฉพาะนามสกุลที่มีความหมายหรือการออกเสียงแบบอาหรับ หรือเกี่ยวข้องกับศาสนาอิสลาม';
+                mapHtml = '<img src="/api/placeholder/400/250" alt="แผนที่ภาคใต้และชุมชนมุสลิมในไทย">';
+            } else {
+                region = 'ไม่สามารถระบุได้ชัดเจน';
+                description = 'ไม่สามารถระบุภูมิภาคได้อย่างชัดเจนจากนามสกุลนี้ นามสกุลไทยมีความหลากหลายและอาจมีที่มาจากหลายภูมิภาค หรืออาจเป็นนามสกุลที่ตั้งขึ้นใหม่ซึ่งไม่มีรูปแบบเฉพาะเจาะจงกับภูมิภาคใดภูมิภาคหนึ่ง';
+                mapHtml = '<img src="/api/placeholder/400/250" alt="แผนที่ประเทศไทย">';
+            }
+            
+            resultText.innerHTML = `
+                <strong>นามสกุล:</strong> ${surname}<br>
+                <strong>ภูมิภาคที่เป็นไปได้:</strong> ${region}<br><br>
+                ${description}<br><br>
+                <em>หมายเหตุ: การวิเคราะห์นี้เป็นเพียงการคาดการณ์เบื้องต้นจากรูปแบบนามสกุลทั่วไป อาจไม่ถูกต้อง 100% เนื่องจากนามสกุลไทยมีความหลากหลายและมีประวัติความเป็นมาเฉพาะของแต่ละครอบครัว</em>
+            `;
+            
+            mapContainer.innerHTML = mapHtml;
+            document.getElementById('result-overlay').style.display = 'flex';
+        }
+    </script>
+</body>
+</html>
