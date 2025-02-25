@@ -13,16 +13,47 @@
             background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
             display: flex;
             flex-direction: column;
-            justify-content: space-between;
             min-height: 100vh;
+            height: 100vh;
             margin: 0;
             padding: 0;
+            overflow: hidden;
+        }
+        
+        .navbar {
+            background: linear-gradient(90deg, #1a2a6c 0%, #2c3e50 100%);
+            color: white;
+            padding: 15px 20px;
+            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.3);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            position: relative;
+            z-index: 100;
+        }
+        
+        .navbar-title {
+            font-size: 24px;
+            font-weight: bold;
+            margin: 0;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+            letter-spacing: 1px;
+            color: #ffffff;
+        }
+        
+        .navbar-icon {
+            margin-right: 10px;
+            font-size: 24px;
         }
         .main-content {
             display: flex;
             justify-content: center;
+            align-items: center;
             padding: 20px;
             flex-grow: 1;
+            width: 100%;
+            height: calc(100vh - 160px); /* คำนวณความสูงโดยหักส่วนของ navbar และ footer */
+            overflow-y: auto;
         }
         .container {
             background: linear-gradient(to bottom right, #ffffff, #f8f9fa);
@@ -36,6 +67,8 @@
             border: 1px solid rgba(255, 255, 255, 0.8);
             position: relative;
             overflow: hidden;
+            max-height: calc(100vh - 140px);
+            overflow-y: auto;
         }
         
         .container::before {
@@ -127,7 +160,7 @@
             top: 0;
             left: 0;
             width: 100%;
-            height: 100%;
+            height: 100vh;
             background-color: rgba(0, 0, 0, 0.5);
             display: none;
             justify-content: center;
@@ -146,6 +179,8 @@
             max-height: 80vh;
             overflow-y: auto;
             border: 1px solid rgba(255, 255, 255, 0.9);
+            display: flex;
+            flex-direction: column;
         }
         .close-btn {
             position: absolute;
@@ -219,9 +254,14 @@
     </style>
 </head>
 <body>
+    <nav class="navbar">
+        <div class="navbar-icon">🔍</div>
+        <h1 class="navbar-title">โปรแกรมตรวจสอบภูมิภาคจากนามสกุล</h1>
+    </nav>
+    
     <div class="main-content">
         <div class="container">
-        <h1>โปรแกรมตรวจสอบภูมิภาคจากนามสกุล</h1>
+        
         
         <div class="input-group">
             <label for="surname">กรุณากรอกนามสกุล</label>
